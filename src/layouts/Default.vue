@@ -1,0 +1,41 @@
+<template>
+  <v-layout>
+    <SideBar v-if="user != null"
+              :firstName="user.firstName"
+              :lastName="user.lastName"
+              :email="user.email"
+    />
+
+    <AppBar :isUserLoggedIn="user != null" />
+
+    <div class="main-container">
+      <v-main>
+        <router-view/>
+      </v-main>
+    </div>
+  </v-layout>
+</template>
+
+<script lang="ts" setup>
+import {onMounted} from 'vue'
+import SideBar from '@/components/SideBar.vue'
+import AppBar from '@/components/AppBar.vue'
+import {useUserStore} from '@/store/users'
+import {storeToRefs} from "pinia";
+
+const userStore = useUserStore()
+
+onMounted(() => {
+  userStore.getUser()
+})
+
+const {user} = storeToRefs(userStore)
+
+</script>
+
+<style scoped>
+.main-container {
+  width: 70%;
+  margin: 2rem auto;
+}
+</style>
