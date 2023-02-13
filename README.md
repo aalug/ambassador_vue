@@ -1,4 +1,10 @@
-# default
+# Ambassador Vue.js app
+It is a frontend for the ambassador_drf - backend app 
+built with the Django REST framework
+### App built with:
+- Vue.js, typescript
+- Vuetify
+- Pinia
 
 ## Project setup
 

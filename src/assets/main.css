@@ -1,0 +1,11 @@
+@import "./base.css";
+
+.errorMessage {
+    color: var(--error-red);
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.errorField {
+    color: var(--error-red);
+}

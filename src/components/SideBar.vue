@@ -2,12 +2,13 @@
   <v-navigation-drawer
     expand-on-hover
     rail
+    style="position: fixed;"
   >
     <v-list>
       <v-list-item
         prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-        :title="username"
-        :subtitle="userEmail"
+        :title="`${firstName} ${lastName}`"
+        :subtitle="email"
       ></v-list-item>
     </v-list>
 
@@ -30,24 +31,27 @@
         <v-list-item prepend-icon="mdi-logout"
                      title="Logout"
                      value="logout"
-                     @click="changeRoute('dashboard')"
+                     style="color: var(--light-red);"
+                     @click="userStore.handleLogout()"
         ></v-list-item>
       </div>
     </template>
-
   </v-navigation-drawer>
 </template>
 
 <script setup lang="ts">
 import {useRouter} from 'vue-router'
+import {useUserStore} from '@/store/users'
 
 defineProps<{
-  username: string,
-  userEmail: string,
+  firstName: string,
+  lastName: string,
+  email: string
 }>()
 
-const router = useRouter()
+const userStore = useUserStore()
 
+const router = useRouter()
 const changeRoute = (path: string) => {
   router.push({name: path})
 }
