@@ -9,3 +9,7 @@
 .errorField {
     color: var(--error-red);
 }
+
+.t-head {
+  background-color: #1a1a1a;
+}
