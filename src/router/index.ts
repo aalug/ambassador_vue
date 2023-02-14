@@ -16,6 +16,16 @@ const routes = [
         name: 'dashboard',
         component: () => import('@/views/DashBoard.vue'),
       },
+      {
+        path: '/users/:userId/links',
+        name: 'user-links',
+        component: () => import('@/views/UserLinks.vue'),
+      },
+      {
+        path: '/products',
+        name: 'products',
+        component: () => import('@/views/Products.vue'),
+      }
     ],
   },
   {

@@ -1,8 +1,8 @@
 
 export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  isAmbassador: boolean;
+  id: number
+  email: string
+  firstName: string
+  lastName: string
+  isAmbassador: boolean
 }

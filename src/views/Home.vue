@@ -1,8 +1,8 @@
 <template>
-  <MainTable />
+  <UsersList />
 </template>
 
 <script lang="ts" setup>
-import MainTable from '@/components/MainTable.vue'
+import UsersList from '@/components/UsersList.vue'
 
 </script>

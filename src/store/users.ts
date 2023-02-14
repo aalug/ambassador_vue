@@ -46,11 +46,11 @@ export const useUserStore = defineStore('users', () => {
     loading.value = true
     try {
       await axios.post(`${import.meta.env.VITE_API_BASE}/admin/register/`, {
-        first_name: firstName,
-        last_name: lastName,
+        firstName: firstName,
+        lastName: lastName,
         email: email,
         password: password,
-        confirm_password: confirmPassword
+        confirmPassword: confirmPassword
       })
       errorMessage.value = ''
       await router.push({name: 'login'})
@@ -105,9 +105,9 @@ export const useUserStore = defineStore('users', () => {
         user.value = {
           id: response.data.id,
           email: response.data.email,
-          firstName: response.data.first_name,
-          lastName: response.data.last_name,
-          isAmbassador: response.data.is_ambassador
+          firstName: response.data.firstName,
+          lastName: response.data.lastName,
+          isAmbassador: response.data.isAmbassador
         }
       } else {
         return user.value = null
