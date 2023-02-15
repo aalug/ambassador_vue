@@ -64,10 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
-import {useRouter} from 'vue-router'
+import {ref, onMounted} from 'vue'
+import {useRouter, useRoute} from 'vue-router'
 import axios from 'axios'
-import ConfirmDialog from '@/components/ConfirmDialog'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const router = useRouter()
 
@@ -86,6 +86,29 @@ const continueWithPriceZero = ref<boolean>(false)
 const refreshDialog = ref<boolean>(false)
 
 const addAnother = ref<boolean>(false)
+
+const {params} = useRoute()
+const id = params.productId
+onMounted(async () => {
+  /**
+   * Checks the route and if it is for editing then fetches the data.
+   */
+  if (id) {
+    try {
+      const {data} = await axios.get(
+        `${import.meta.env.VITE_API_BASE}/admin/products/${id}/`,
+        {withCredentials: true}
+      )
+      title.value = data.title
+      description.value = data.description
+      image.value = data.image
+      price.value = data.price
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+})
 
 const validateInput = () => {
   /**
@@ -129,19 +152,29 @@ const handleSubmit = async () => {
   if (price.value == 0 && !continueWithPriceZero.value) {
     showConfirmationDialog.value = true
     return
-    // const res = confirm('Are you sure you want the price to be 0?')
-    // if (!res) return
   }
-  await axios.post(
-    `${import.meta.env.VITE_API_BASE}/admin/products/`,
-    {
-      title: title.value,
-      description: description.value,
-      image: image.value,
-      price: price.value
-    },
-    {withCredentials: true}
-  )
+  const data = {
+    title: title.value,
+    description: description.value,
+    image: image.value,
+    price: price.value
+  }
+  // If `id` exists, that means that user is editing product - PUT.
+  if (id) {
+    await axios.put(
+      `${import.meta.env.VITE_API_BASE}/admin/products/${id}/`,
+      data,
+      {withCredentials: true}
+    )
+  } else {
+    // There is no `id` so we are creating a new product - POST.
+    await axios.post(
+      `${import.meta.env.VITE_API_BASE}/admin/products/`,
+      data,
+      {withCredentials: true}
+    )
+  }
+
   if (!addAnother.value) {
     await router.push({name: 'products'})
   } else {
