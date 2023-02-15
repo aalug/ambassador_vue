@@ -1,0 +1,154 @@
+<template>
+  <ConfirmDialog
+    v-if="showConfirmationDialog"
+    title="Are you sure"
+    info="that you want the price to be 0?"
+    :key="refreshDialog"
+    @confirmed="handleDialogResponse"
+  />
+
+  <div class="text-right">
+    <v-btn
+      color="red"
+      class="my-4"
+      @click="clearTheForm()"
+    >
+      Clear
+    </v-btn>
+  </div>
+
+  <v-form ref="form" @submit.prevent="handleSubmit()">
+    <v-text-field
+      v-model="title"
+      label="Title"
+      required
+    ></v-text-field>
+    <v-textarea
+      v-model="description"
+      label="Description"
+      required
+    ></v-textarea>
+    <v-text-field
+      v-model="image"
+      label="Image"
+      required
+    ></v-text-field>
+    <v-text-field
+      v-model="price"
+      label="Price"
+      type="number"
+      min="0"
+      required
+    ></v-text-field>
+    <p class="errorMessage">{{ errorMessage }}</p>
+    <div class="d-flex flex-column">
+      <v-btn
+        color="light-blue-lighten-1"
+        class="mt-4"
+        type="submit"
+        block
+      >
+        Save
+      </v-btn>
+      <v-btn
+        color="teal-lighten-3"
+        class="mt-4"
+        type="submit"
+        @click="addAnother = true"
+        block
+      >
+        Save and add another
+      </v-btn>
+    </div>
+  </v-form>
+</template>
+
+<script setup lang="ts">
+import {ref} from 'vue'
+import {useRouter} from 'vue-router'
+import axios from 'axios'
+import ConfirmDialog from '@/components/ConfirmDialog'
+
+const router = useRouter()
+
+const errorMessage = ref<string>('')
+
+const title = ref<string>('')
+const description = ref<string>('')
+const image = ref<string>('')
+const price = ref<number>(0)
+
+const showConfirmationDialog = ref<boolean>(false)
+const continueWithPriceZero = ref<boolean>(false)
+
+// It will change every time dialog answer is received. Because of the `key`
+// in the ConfirmDialog component it will be refreshed every time this value changes.
+const refreshDialog = ref<boolean>(false)
+
+const addAnother = ref<boolean>(false)
+
+const validateInput = () => {
+  /**
+   * Validate the data in the form and set the error message accordingly.
+   */
+  if (!title.value) return errorMessage.value = 'The title cannot be empty.'
+  else if (!description.value) return errorMessage.value = 'The description cannot be empty.'
+  else if (!image.value) return errorMessage.value = 'The image url cannot be empty.'
+  return errorMessage.value = ''
+}
+
+const clearTheForm = () => {
+  title.value = ''
+  description.value = ''
+  image.value = ''
+  price.value = 0
+}
+
+const handleDialogResponse = (wasConfirmedClicked: boolean) => {
+  /**
+   * This function is called when dialog has received a response (emit).
+   */
+  if (wasConfirmedClicked) {
+    continueWithPriceZero.value = wasConfirmedClicked
+    handleSubmit()
+  }
+}
+
+const handleSubmit = async () => {
+  /**
+   * Gets inputted data and makes a post request to the backend to
+   * `/admin/products/` endpoint which will create and save the new product.
+   */
+
+  // function validateInput() return the error message, so if it returns falsy value
+  // (empty string) that means that there is no error message and that the data is valid.
+  if (validateInput()) return
+
+  refreshDialog.value = !refreshDialog.value
+
+  if (price.value == 0 && !continueWithPriceZero.value) {
+    showConfirmationDialog.value = true
+    return
+    // const res = confirm('Are you sure you want the price to be 0?')
+    // if (!res) return
+  }
+  await axios.post(
+    `${import.meta.env.VITE_API_BASE}/admin/products/`,
+    {
+      title: title.value,
+      description: description.value,
+      image: image.value,
+      price: price.value
+    },
+    {withCredentials: true}
+  )
+  if (!addAnother.value) {
+    await router.push({name: 'products'})
+  } else {
+    addAnother.value = false
+    showConfirmationDialog.value = false
+    clearTheForm()
+  }
+}
+
+</script>
