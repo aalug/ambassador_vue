@@ -17,27 +17,26 @@
     Add
   </v-btn>
 
-  <v-table density="default" hover>
+  <v-table
+    style="table-layout:fixed; width:100%"
+    density="default"
+    hover>
+    <colgroup>
+      <col style="width:3%">
+      <col style="width:5%">
+      <col style="width:15%">
+      <col style="width:67%">
+      <col style="width:5%">
+      <col style="width:5%">
+    </colgroup>
     <thead class="t-head">
     <tr>
-      <th class="text-left">
-        #
-      </th>
-      <th class="text-left">
-        Image
-      </th>
-      <th class="text-left">
-        Title
-      </th>
-      <th class="text-center">
-        Description
-      </th>
-      <th class="text-right">
-        Price
-      </th>
-      <th class="text-right">
-        Actions
-      </th>
+      <th>#</th>
+      <th>Image</th>
+      <th>Title</th>
+      <th class="text-center">Description</th>
+      <th>Price</th>
+      <th class="text-center">Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -65,14 +64,25 @@
       </td>
       <td>{{ product.title }}</td>
       <td>{{ product.description }}</td>
-      <td class="text-right">{{ product.price }}</td>
-      <td class="text-right">
-        <v-btn
-          color="error"
-          @click="startDeletingProcess(product.id)"
-        >
-          Delete
-        </v-btn>
+      <td>{{ product.price }}</td>
+      <td class="center">
+        <div class="d-flex align-center flex-column flex-md-row fill-height">
+          <v-btn
+            color="light-blue-accent-3"
+            variant="flat"
+            icon="mdi-pencil"
+            size="small"
+            class="mr-2"
+            @click="goToEditProduct(product.id)"
+          ></v-btn>
+          <v-btn
+            color="red"
+            variant="flat"
+            icon="mdi-delete"
+            size="small"
+            @click="startDeletingProcess(product.id)"
+          ></v-btn>
+        </div>
       </td>
     </tr>
     </tbody>
@@ -162,6 +172,10 @@ const deleteProduct = async (productId: number) => {
 
 const goToCreateProduct = () => {
   router.push({name: 'create-product'})
+}
+
+const goToEditProduct = (productId: number) => {
+  router.push({name: 'edit-product', params: {productId: productId}})
 }
 
 </script>

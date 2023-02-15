@@ -60,10 +60,16 @@ const perPage = ref<number>(10)
 const lastPage = ref<number>(0)
 
 onMounted(async () => {
-  const {data} = await axios.get(`${import.meta.env.VITE_API_BASE}/admin/ambassadors/`, {withCredentials: true})
-  users.value = data
-
-  lastPage.value = Math.ceil(data.length / perPage.value)
+  try {
+    const {data} = await axios.get(
+      `${import.meta.env.VITE_API_BASE}/admin/ambassadors/`,
+      {withCredentials: true}
+    )
+    users.value = data
+    lastPage.value = Math.ceil(data.length / perPage.value)
+  } catch (e) {
+    console.error(e)
+  }
 })
 
 const goToUserLinks = (userId: string) => {

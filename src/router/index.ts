@@ -31,6 +31,11 @@ const routes = [
         name: 'create-product',
         component: () => import('@/views/products/CreateProduct.vue'),
       },
+      {
+        path: '/products/:productId/edit',
+        name: 'edit-product',
+        component: () => import('@/views/products/CreateProduct.vue'),
+      },
     ],
   },
   {
