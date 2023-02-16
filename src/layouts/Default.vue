@@ -1,12 +1,12 @@
 <template>
   <v-layout>
     <SideBar v-if="user != null"
-              :firstName="user.firstName"
-              :lastName="user.lastName"
-              :email="user.email"
+             :firstName="user.firstName"
+             :lastName="user.lastName"
+             :email="user.email"
     />
 
-    <AppBar :isUserLoggedIn="user != null" />
+    <AppBar :isUserLoggedIn="user != null"/>
 
     <div class="main-container">
       <v-main>
@@ -18,10 +18,10 @@
 
 <script lang="ts" setup>
 import {onMounted} from 'vue'
+import {storeToRefs} from 'pinia'
 import SideBar from '@/components/SideBar.vue'
 import AppBar from '@/components/AppBar.vue'
 import {useUserStore} from '@/store/users'
-import {storeToRefs} from "pinia";
 
 const userStore = useUserStore()
 

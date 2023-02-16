@@ -58,7 +58,6 @@
 
 <script setup lang="ts">
 import {ref} from 'vue'
-import {useRouter} from 'vue-router'
 import {useUserStore} from '@/store/users'
 import {storeToRefs} from 'pinia'
 
