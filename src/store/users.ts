@@ -72,7 +72,6 @@ export const useUserStore = defineStore('users', () => {
       errorMessage.value = ''
       await router.push({name: 'home'})
     } catch (e) {
-      console.error(e)
       // @ts-ignore
       if (e.response.status === 401) {
         errorMessage.value = 'Incorrect credentials. Please try again.';
@@ -96,6 +95,65 @@ export const useUserStore = defineStore('users', () => {
     } catch (e) {
       console.error(e)
     }
+  }
+
+  const handleChangeAccountInfo = async (newEmail: string,
+                                         newFirstName: string,
+                                         newLastName: string) => {
+    const newAccountInfo: { [key: string]: string } = {}
+
+    // Validation
+    if (!validateEmail(newEmail)) return errorMessage.value = 'Email is invalid.'
+    if (!newFirstName) return errorMessage.value = 'First name is required.'
+    if (!newLastName) return errorMessage.value = 'Last name is required.'
+    errorMessage.value = ''
+
+    // @ts-ignore
+    if (newEmail !== user.value.email)
+      newAccountInfo['email'] = newEmail
+    // @ts-ignore
+    if (newFirstName !== user.value.firstName)
+      newAccountInfo['firstName'] = newFirstName
+    // @ts-ignore
+    if (newLastName !== user.value.lastName)
+      newAccountInfo['lastName'] = newLastName
+    try {
+      loading.value = true
+      await axios.put(
+        `${import.meta.env.VITE_API_BASE}/admin/user/info/`,
+        newAccountInfo,
+        {withCredentials: true}
+      )
+      await getUser()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const handleChangePassword = async (newPassword: string, newConfirmPassword: string) => {
+    if (newPassword != newConfirmPassword) {
+      return errorMessage.value = 'Passwords do not match.'
+    }
+    if (newPassword.length < 6) {
+      return errorMessage.value = 'Password must be at least 6 characters.'
+    }
+    errorMessage.value = ''
+
+    loading.value = true
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_API_BASE}/admin/user/password/`,
+        {password: newPassword, confirmPassword: newConfirmPassword},
+        {withCredentials: true}
+      )
+    } catch (e) {
+      console.error(e)
+    } finally {
+      loading.value = false
+    }
+
   }
 
   const getUser = async () => {
@@ -125,6 +183,8 @@ export const useUserStore = defineStore('users', () => {
     handleSignUp,
     handleLogin,
     handleLogout,
+    handleChangeAccountInfo,
+    handleChangePassword,
     getUser,
   }
 })
