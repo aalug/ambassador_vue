@@ -21,7 +21,8 @@ export const useUserStore = defineStore('users', () => {
 
   const handleSignUp = async (firstName: string, lastName: string,
                               email: string,
-                              password: string, confirmPassword: string) => {
+                              password: string, confirmPassword: string,
+                              isAmbassador: boolean) => {
 
     if (!validateEmail(email)) {
       return errorMessage.value = 'Email is invalid.'
@@ -43,9 +44,10 @@ export const useUserStore = defineStore('users', () => {
 
     errorMessage.value = ''
 
+    const userType = isAmbassador ? 'ambassador' : 'admin'
     loading.value = true
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE}/admin/register/`, {
+      await axios.post(`${import.meta.env.VITE_API_BASE}/${userType}/register/`, {
         firstName: firstName,
         lastName: lastName,
         email: email,
@@ -62,10 +64,12 @@ export const useUserStore = defineStore('users', () => {
     }
   }
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async (email: string, password: string, typeOfUser: string) => {
+    localStorage.setItem('userType', typeOfUser);
+
     loading.value = true
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE}/admin/login/`, {
+      await axios.post(`${import.meta.env.VITE_API_BASE}/${typeOfUser}/login/`, {
         email: email,
         password: password
       }, {withCredentials: true})
@@ -84,9 +88,13 @@ export const useUserStore = defineStore('users', () => {
   }
 
   const handleLogout = async () => {
+
+    // @ts-ignore
+    const adminOrAmbassador = user.value.isAmbassador ? 'ambassador' : 'admin';
+
     try {
       await axios.post(
-        `${import.meta.env.VITE_API_BASE}/admin/logout/`,
+        `${import.meta.env.VITE_API_BASE}/${adminOrAmbassador}/logout/`,
         null,
         {withCredentials: true}
       )
@@ -117,10 +125,14 @@ export const useUserStore = defineStore('users', () => {
     // @ts-ignore
     if (newLastName !== user.value.lastName)
       newAccountInfo['lastName'] = newLastName
+
+    // @ts-ignore
+    const adminOrAmbassador = user.value.isAmbassador ? 'ambassador' : 'admin'
+
+    loading.value = true
     try {
-      loading.value = true
       await axios.put(
-        `${import.meta.env.VITE_API_BASE}/admin/user/info/`,
+        `${import.meta.env.VITE_API_BASE}/${adminOrAmbassador}/user/info/`,
         newAccountInfo,
         {withCredentials: true}
       )
@@ -141,10 +153,13 @@ export const useUserStore = defineStore('users', () => {
     }
     errorMessage.value = ''
 
+    // @ts-ignore
+    const adminOrAmbassador = user.value.isAmbassador ? 'ambassador' : 'admin'
+
     loading.value = true
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_BASE}/admin/user/password/`,
+        `${import.meta.env.VITE_API_BASE}/${adminOrAmbassador}/user/password/`,
         {password: newPassword, confirmPassword: newConfirmPassword},
         {withCredentials: true}
       )
@@ -153,12 +168,16 @@ export const useUserStore = defineStore('users', () => {
     } finally {
       loading.value = false
     }
-
   }
 
   const getUser = async () => {
+    loading.value = true
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE}/admin/user/`, {withCredentials: true})
+      const storedUserType = localStorage.getItem('userType')
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE}/${storedUserType}/user/`,
+        {withCredentials: true}
+      )
       if (response.data) {
         user.value = {
           id: response.data.id,
@@ -172,7 +191,9 @@ export const useUserStore = defineStore('users', () => {
       }
     } catch (e) {
       user.value = null
-      await useRouter().push({name: 'login'})
+      await router.push({name: 'login'})
+    } finally {
+      loading.value = false
     }
   }
 
