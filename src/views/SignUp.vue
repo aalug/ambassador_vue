@@ -34,6 +34,21 @@
         hint="At least 6 characters"
         @click:append="showPass = !showPass"
       ></v-text-field>
+
+      <v-radio-group
+        v-model="userType"
+        column
+      >
+        <v-radio
+          label="Ambassador"
+          value="ambassador"
+        ></v-radio>
+        <v-radio
+          label="Administrator"
+          value="admin"
+        ></v-radio>
+      </v-radio-group>
+
       <p class="errorMessage" v-if="errorMessage">{{ errorMessage }}</p>
       <div class="d-flex flex-column">
         <v-btn
@@ -57,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import {useUserStore} from '@/store/users'
 import {storeToRefs} from 'pinia'
 
@@ -71,6 +86,12 @@ const password = ref<string>('')
 const confirmPassword = ref<string>('')
 const firstName = ref<string>('')
 const lastName = ref<string>('')
+const userType = ref<string>('ambassador')
+let isAmbassador = true
+
+watch(userType, () => {
+  isAmbassador = userType.value === 'ambassador'
+})
 
 const handleSubmit = async (e: MouseEvent) => {
   await userStore.handleSignUp(
@@ -78,7 +99,8 @@ const handleSubmit = async (e: MouseEvent) => {
     lastName.value,
     email.value,
     password.value,
-    confirmPassword.value
+    confirmPassword.value,
+    isAmbassador
   )
 }
 

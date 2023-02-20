@@ -82,7 +82,7 @@ import {useUserStore} from "@/store/users";
 import {storeToRefs} from "pinia";
 
 const userStore = useUserStore()
-const {errorMessage, loading} = storeToRefs(userStore)
+const {errorMessage, loading, user} = storeToRefs(userStore)
 
 const showPass = ref<boolean>(false)
 
@@ -94,9 +94,11 @@ const password = ref<string>('')
 const confirmPassword = ref<string>('')
 
 onMounted(async () => {
+  // @ts-ignore
+  const userType = user.value.isAmbassador ? 'ambassador' : 'admin'
   try {
     const {data} = await axios.get(
-      `${import.meta.env.VITE_API_BASE}/admin/user/`,
+      `${import.meta.env.VITE_API_BASE}/${userType}/user/`,
       {withCredentials: true}
     )
     email.value = data.email

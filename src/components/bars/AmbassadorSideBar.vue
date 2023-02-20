@@ -24,16 +24,8 @@
                    value="dashboard"
                    @click="changeRoute('dashboard')"
       ></v-list-item>
-      <v-list-item prepend-icon="mdi-format-list-checks"
-                   title="Products"
-                   value="products"
-                   @click="changeRoute('products')"
-      ></v-list-item>
-      <v-list-item prepend-icon="mdi-cart"
-                   title="Orders"
-                   value="orders"
-                   @click="changeRoute('orders')"
-      ></v-list-item>
+
+
     </v-list>
     <template v-slot:append>
       <div class="pa-2">

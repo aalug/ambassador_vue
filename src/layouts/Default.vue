@@ -1,10 +1,15 @@
 <template>
-  <v-layout>
-    <SideBar v-if="user != null"
-             :firstName="user.firstName"
-             :lastName="user.lastName"
-             :email="user.email"
-    />
+  <PageLoadingProgress v-if="loading"/>
+
+  <v-layout v-else>
+    <div v-if="user != null">
+      <component
+        :is="user.isAmbassador ? AmbassadorSideBar : AdminSideBar"
+        :firstName="user.firstName"
+        :lastName="user.lastName"
+        :email="user.email"
+      />
+    </div>
 
     <AppBar :isUserLoggedIn="user != null"/>
 
@@ -19,11 +24,15 @@
 <script lang="ts" setup>
 import {onMounted} from 'vue'
 import {storeToRefs} from 'pinia'
-import SideBar from '@/components/SideBar.vue'
-import AppBar from '@/components/AppBar.vue'
+import AdminSideBar from '@/components/bars/AdminSideBar.vue'
+import AmbassadorSideBar from '@/components/bars/AmbassadorSideBar.vue'
+import AppBar from '@/components/bars/AppBar.vue'
+import PageLoadingProgress from '@/components/PageLoadingProgress.vue'
 import {useUserStore} from '@/store/users'
 
 const userStore = useUserStore()
+
+const {loading} = storeToRefs(userStore)
 
 onMounted(() => {
   userStore.getUser()

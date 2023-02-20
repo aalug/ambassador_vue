@@ -17,6 +17,16 @@
         hint="At least 6 characters"
         @click:append="showPass = !showPass"
       ></v-text-field>
+
+      <div class="userTypeBox">
+        <v-switch
+          v-model="isAdmin"
+          label="Login as administrator"
+          color="indigo"
+          hide-details
+        ></v-switch>
+      </div>
+
       <p class="errorMessage">{{ errorMessage }}</p>
       <div class="d-flex flex-column">
         <v-btn
@@ -41,22 +51,26 @@
 
 <script setup lang="ts">
 import {ref} from 'vue'
-import {useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
 import {useUserStore} from '@/store/users'
-
-const router = useRouter()
 
 const showPass = ref<boolean>(false)
 
 const email = ref<string>('')
 const password = ref<string>('')
+const isAdmin = ref<boolean>(false)
 
 const userStore = useUserStore()
 const {loading, errorMessage} = storeToRefs(userStore)
 
 const handleSubmit = async () => {
-  await userStore.handleLogin(email.value, password.value)
+  /**
+   * Handles submitting the login form. It sends `userType`
+   * to inform what type of user is trying to log in - to which endpoint
+   * should the request be made.
+   */
+  const userType = isAdmin.value ? 'admin' : 'ambassador'
+  await userStore.handleLogin(email.value, password.value, userType)
 }
 
 </script>
