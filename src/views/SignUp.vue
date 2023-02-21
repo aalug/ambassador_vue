@@ -2,31 +2,31 @@
   <v-card class="card">
     <v-form ref="form" @submit.prevent="handleSubmit">
       <v-text-field
-        v-model="email"
+        v-model="data.email"
         label="Email"
         type="email"
         required
       ></v-text-field>
       <v-text-field
-        v-model="firstName"
+        v-model="data.firstName"
         label="First Name"
         required
       ></v-text-field>
       <v-text-field
-        v-model="lastName"
+        v-model="data.lastName"
         label="Last Name"
         required
       ></v-text-field>
 
       <v-text-field
-        v-model="password"
+        v-model="data.password"
         label="Password"
         required
         :type="showPass ? 'text' : 'password'"
         hint="At least 6 characters"
       ></v-text-field>
       <v-text-field
-        v-model="confirmPassword"
+        v-model="data.confirmPassword"
         label="Confirm Password"
         required
         :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import {ref, watch, reactive} from 'vue'
 import {useUserStore} from '@/store/users'
 import {storeToRefs} from 'pinia'
 
@@ -81,11 +81,13 @@ const {errorMessage, loading} = storeToRefs(userStore)
 
 const showPass = ref<boolean>(false)
 
-const email = ref<string>('')
-const password = ref<string>('')
-const confirmPassword = ref<string>('')
-const firstName = ref<string>('')
-const lastName = ref<string>('')
+const data = reactive({
+  email: '',
+  password: '',
+  confirmPassword: '',
+  firstName: '',
+  lastName: ''
+})
 const userType = ref<string>('ambassador')
 let isAmbassador = true
 
@@ -95,11 +97,11 @@ watch(userType, () => {
 
 const handleSubmit = async (e: MouseEvent) => {
   await userStore.handleSignUp(
-    firstName.value,
-    lastName.value,
-    email.value,
-    password.value,
-    confirmPassword.value,
+    data.email,
+    data.firstName,
+    data.lastName,
+    data.password,
+    data.confirmPassword,
     isAmbassador
   )
 }
