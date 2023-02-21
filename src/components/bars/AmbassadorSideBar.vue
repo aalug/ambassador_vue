@@ -24,7 +24,21 @@
                    value="dashboard"
                    @click="changeRoute('dashboard')"
       ></v-list-item>
-
+      <v-list-item prepend-icon="mdi-account"
+                   title="Amb"
+                   value="amb"
+                   @click="changeRoute('amb')"
+      ></v-list-item>
+      <v-list-item prepend-icon="mdi-chart-line"
+                   title="My stats"
+                   value="ambassador-stats"
+                   @click="changeRoute('ambassador-stats')"
+      ></v-list-item>
+      <v-list-item prepend-icon="mdi-trophy"
+                   title="Rankings"
+                   value="ambassador-rankings"
+                   @click="changeRoute('ambassador-rankings')"
+      ></v-list-item>
 
     </v-list>
     <template v-slot:append>

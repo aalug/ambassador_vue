@@ -17,10 +17,10 @@ export const useUserStore = defineStore('users', () => {
       .match(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       )
-  };
+  }
 
-  const handleSignUp = async (firstName: string, lastName: string,
-                              email: string,
+  const handleSignUp = async (email: string,
+                              firstName: string, lastName: string,
                               password: string, confirmPassword: string,
                               isAmbassador: boolean) => {
 
@@ -184,7 +184,8 @@ export const useUserStore = defineStore('users', () => {
           email: response.data.email,
           firstName: response.data.firstName,
           lastName: response.data.lastName,
-          isAmbassador: response.data.isAmbassador
+          isAmbassador: response.data.isAmbassador,
+          revenue: response.data.revenue
         }
       } else {
         return user.value = null

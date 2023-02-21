@@ -7,6 +7,21 @@
       Ambassador app
     </v-app-bar-title>
     <div class="d-flex align-center">
+      <div v-if="isUserAmbassador">
+        <v-btn
+          variant="flat"
+          color="cyan-darken-3"
+        >
+          Frontend
+        </v-btn>
+        <v-btn
+          variant="flat"
+          color="brown-darken-3"
+          class="mr-6 ml-2"
+        >
+          Backend
+        </v-btn>
+      </div>
       <v-text-field label="Search..." class="mt-5 mr-7" style="width: 300px;"/>
     </div>
     <div v-if="!isUserLoggedIn">
@@ -40,7 +55,8 @@
 import {useRouter} from 'vue-router'
 
 defineProps<{
-  isUserLoggedIn: boolean
+  isUserLoggedIn: boolean,
+  isUserAmbassador: boolean
 }>()
 
 const router = useRouter()

@@ -11,7 +11,10 @@
       />
     </div>
 
-    <AppBar :isUserLoggedIn="user != null"/>
+    <AppBar
+      :isUserLoggedIn="user != null"
+      :isUserAmbassador="user && user.isAmbassador"
+    />
 
     <div class="main-container">
       <v-main>
@@ -21,7 +24,7 @@
   </v-layout>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import {onMounted} from 'vue'
 import {storeToRefs} from 'pinia'
 import AdminSideBar from '@/components/bars/AdminSideBar.vue'
@@ -32,13 +35,12 @@ import {useUserStore} from '@/store/users'
 
 const userStore = useUserStore()
 
-const {loading} = storeToRefs(userStore)
-
-onMounted(() => {
-  userStore.getUser()
+onMounted(async () => {
+  await userStore.getUser()
 })
+const {user, loading} = storeToRefs(userStore)
 
-const {user} = storeToRefs(userStore)
+
 
 </script>
 

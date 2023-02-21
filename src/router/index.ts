@@ -46,6 +46,21 @@ const routes = [
         name: 'orders',
         component: () => import('@/views/Orders.vue'),
       },
+      {
+        path: '/amb',
+        name: 'amb',
+        component: () => import('@/views/MainPageAmb.vue'),
+      },
+      {
+        path: '/ambassador-stats',
+        name: 'ambassador-stats',
+        component: () => import('@/views/AmbassadorStats.vue')
+      },
+      {
+        path: '/ambassador-rankings',
+        name: 'ambassador-rankings',
+        component: () => import('@/views/AmbassadorRankings.vue')
+      }
     ],
   },
   {
