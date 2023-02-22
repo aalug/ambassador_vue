@@ -7,17 +7,21 @@
       Ambassador app
     </v-app-bar-title>
     <div class="d-flex align-center">
-      <div v-if="isUserAmbassador">
+      <div v-if="isUserAmbassador && (inProductsFrontend || inProductsBackend)">
         <v-btn
           variant="flat"
-          color="cyan-darken-3"
+          color="var(--dark-cyan)"
+          :class="{active: inProductsFrontend}"
+          @click="changeRoute('products-frontend')"
         >
           Frontend
         </v-btn>
         <v-btn
           variant="flat"
-          color="brown-darken-3"
+          color="var(--dark-cyan)"
           class="mr-6 ml-2"
+          :class="{active: inProductsBackend}"
+          @click="changeRoute('products-backend')"
         >
           Backend
         </v-btn>
@@ -52,22 +56,37 @@
 </template>
 
 <script setup lang="ts">
-import {useRouter} from 'vue-router'
+import {ref, watch} from 'vue'
+import {useRouter, useRoute} from 'vue-router'
 
 defineProps<{
   isUserLoggedIn: boolean,
   isUserAmbassador: boolean
 }>()
 
+const route = useRoute()
 const router = useRouter()
 const changeRoute = (pathName: string) => {
   router.push({name: pathName})
 }
+
+const inProductsFrontend = ref<boolean>(route.path.includes('/products-frontend'))
+const inProductsBackend = ref<boolean>(route.path.includes('/products-backend'))
+
+watch(route, () => {
+  inProductsFrontend.value = route.path.includes('/products-frontend')
+  inProductsBackend.value = route.path.includes('/products-backend')
+})
+
 </script>
 
 <style scoped>
 .bar-title:hover {
   cursor: pointer;
   color: #46ee9a;
+}
+
+.active {
+  background-color: #199393 !important;
 }
 </style>

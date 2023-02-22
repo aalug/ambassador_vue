@@ -29,7 +29,7 @@ const routes = [
       {
         path: '/products',
         name: 'products',
-        component: () => import('@/views/products/Products.vue'),
+        component: () => import('@/views/products/AllProducts.vue'),
       },
       {
         path: '/products/create',
@@ -47,11 +47,6 @@ const routes = [
         component: () => import('@/views/Orders.vue'),
       },
       {
-        path: '/amb',
-        name: 'amb',
-        component: () => import('@/views/MainPageAmb.vue'),
-      },
-      {
         path: '/ambassador-stats',
         name: 'ambassador-stats',
         component: () => import('@/views/AmbassadorStats.vue')
@@ -60,7 +55,17 @@ const routes = [
         path: '/ambassador-rankings',
         name: 'ambassador-rankings',
         component: () => import('@/views/AmbassadorRankings.vue')
-      }
+      },
+      {
+        path: '/products-frontend',
+        name: 'products-frontend',
+        component: () => import('@/views/products/ProductsFrontend.vue')
+      },
+      {
+        path: '/products-backend',
+        name: 'products-backend',
+        component: () => import('@/views/products/ProductsBackend.vue')
+      },
     ],
   },
   {
