@@ -24,10 +24,10 @@
                    value="dashboard"
                    @click="changeRoute('dashboard')"
       ></v-list-item>
-      <v-list-item prepend-icon="mdi-account"
-                   title="Amb"
-                   value="amb"
-                   @click="changeRoute('amb')"
+      <v-list-item prepend-icon="mdi-cash"
+                   title="Main"
+                   value="main"
+                   @click="changeRoute('ambassador-main')"
       ></v-list-item>
       <v-list-item prepend-icon="mdi-chart-line"
                    title="My stats"
@@ -38,6 +38,11 @@
                    title="Rankings"
                    value="ambassador-rankings"
                    @click="changeRoute('ambassador-rankings')"
+      ></v-list-item>
+      <v-list-item prepend-icon="mdi-cart"
+                   title="Products"
+                   value="products"
+                   @click="changeRoute('products-frontend')"
       ></v-list-item>
 
     </v-list>

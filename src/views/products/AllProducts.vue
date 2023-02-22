@@ -125,13 +125,18 @@ onMounted(async () => {
    * Gets all products.
    */
   loading.value = true
-  const {data} = await axios.get(
-    `${import.meta.env.VITE_API_BASE}/admin/products/`,
-    {withCredentials: true}
-  )
-  products.value = data
-  lastPage.value = Math.ceil(data.length / perPage.value)
-  loading.value = false
+  try {
+    const {data} = await axios.get(
+      `${import.meta.env.VITE_API_BASE}/admin/products/`,
+      {withCredentials: true}
+    )
+    products.value = data
+    lastPage.value = Math.ceil(data.length / perPage.value)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
 })
 
 const startDeletingProcess = (id: number) => {
@@ -160,14 +165,17 @@ const handleDialogResponse = (wasConfirmedClicked: boolean) => {
 
 const deleteProduct = async (productId: number) => {
   loading.value = true
-  console.log('start loading')
-  await axios.delete(
-    `${import.meta.env.VITE_API_BASE}/admin/products/${productId}/`,
-    {withCredentials: true}
-  )
-  products.value = products.value.filter(p => p.id != productId)
-  loading.value = false
-  console.log('end loading')
+  try {
+    await axios.delete(
+      `${import.meta.env.VITE_API_BASE}/admin/products/${productId}/`,
+      {withCredentials: true}
+    )
+    products.value = products.value.filter(p => p.id != productId)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
 }
 
 const goToCreateProduct = () => {

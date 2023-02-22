@@ -43,7 +43,7 @@ const loading = ref<boolean>(false)
 onMounted(async () => {
   loading.value = true
   try {
-    const {data} = await axios.get(
+    const {data} = await axios.get<StatsLink[]>(
       `${import.meta.env.VITE_API_BASE}/ambassador/stats/`,
       {withCredentials: true}
     )
