@@ -2,6 +2,7 @@
   <v-card
     class="mx-auto mt-7 card"
     variant="outlined"
+    style="margin-bottom: 7rem;"
   >
     <h1>{{ title }}</h1>
     <h2>{{ description }}</h2>

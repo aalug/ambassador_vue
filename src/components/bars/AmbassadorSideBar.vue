@@ -24,11 +24,6 @@
                    value="dashboard"
                    @click="changeRoute('dashboard')"
       ></v-list-item>
-      <v-list-item prepend-icon="mdi-cash"
-                   title="Main"
-                   value="main"
-                   @click="changeRoute('ambassador-main')"
-      ></v-list-item>
       <v-list-item prepend-icon="mdi-chart-line"
                    title="My stats"
                    value="ambassador-stats"
