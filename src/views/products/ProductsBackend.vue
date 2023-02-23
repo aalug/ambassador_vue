@@ -1,6 +1,11 @@
 <template>
   <AmbassadorRevenueCard/>
 
+  <GeneratedLinkAlert
+    v-if="generatedLink"
+    :generatedLink="generatedLink"
+  />
+
   <div class="filters">
     <v-layout>
       <v-text-field
@@ -22,7 +27,11 @@
     </v-layout>
   </div>
 
-  <Products v-if="!loading" :products="products"/>
+  <Products
+    v-if="!loading"
+    :products="products"
+    @generateLink="afterLinkGenerated"
+  />
 
   <div
     class="d-flex justify-center mt-5 mb-6"
@@ -43,6 +52,7 @@ import {ref, watch, onMounted} from 'vue'
 import axios from 'axios'
 import Products from '@/components/Products.vue'
 import AmbassadorRevenueCard from '@/components/AmbassadorRevenueCard.vue'
+import GeneratedLinkAlert from '@/components/GeneratedLinkAlert.vue'
 import {Product} from '@/types/product'
 
 const products = ref<Product[]>([])
@@ -53,6 +63,7 @@ const search = ref<string>('')
 const sortBy = ref<string>('')
 
 const lastPage = ref<number>(0)
+const generatedLink = ref<string>('')
 
 type SortingOptions = {
   [key: string]: string
@@ -93,7 +104,6 @@ const loadData = async () => {
 
   loading.value = true
   try {
-    console.log(`${import.meta.env.VITE_API_BASE}/ambassador/products/backend?${queryParams.join('')}`,)
     const {data} = await axios.get(
       `${import.meta.env.VITE_API_BASE}/ambassador/products/backend?${queryParams.join('')}`,
       {withCredentials: true}
@@ -116,7 +126,16 @@ const searchData = async () => {
   await loadData()
 }
 
-watch(sortBy, async () => {await searchData()})
+const afterLinkGenerated = (link: string) => {
+  /**
+   * After emit, set the link value which will be display at the top of the page.
+   */
+  generatedLink.value = link
+}
+
+watch(sortBy, async () => {
+  await searchData()
+})
 watch(page, async () => {
   await loadData()
   await scrollToBottom()
@@ -135,7 +154,7 @@ const scrollToBottom = () => {
 <style scoped>
 .filters {
   width: 80%;
-  margin: 8rem auto 0 auto;
+  margin: 1rem auto 0 auto;
 }
 
 .search {

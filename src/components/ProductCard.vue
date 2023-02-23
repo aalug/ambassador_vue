@@ -1,8 +1,8 @@
 <template>
   <v-card
     class="mx-auto mt-5 product-card"
+    :class="{selected: isSelected}"
     max-width="344"
-    :class="{'over-others': showDescription}"
   >
     <v-img
       :src="imageUrl"
@@ -33,7 +33,7 @@
     </v-card-subtitle>
 
     <v-card-actions>
-    <h4 class="ml-3">${{ price }}</h4>
+      <h4 class="ml-3">${{ price }}</h4>
 
       <v-btn
         :icon="showDescription ? 'mdi-chevron-up' : 'mdi-chevron-down'"
@@ -64,14 +64,17 @@ defineProps<{
   title: string,
   description: string,
   imageUrl: string,
-  price: string
+  price: string,
+  isSelected: boolean
 }>()
 
 </script>
 
 <style scoped>
 .product-card {
-  transition: all 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out;
+  cursor: pointer;
+  transform-origin: center;
 }
 
 .product-card:hover {
@@ -82,6 +85,10 @@ defineProps<{
 .transparent {
   transition: opacity 0.2s ease;
   opacity: 0;
+}
+
+.selected {
+  outline: solid 2px white;
 }
 
 </style>

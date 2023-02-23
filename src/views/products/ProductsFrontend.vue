@@ -1,6 +1,11 @@
 <template>
   <AmbassadorRevenueCard/>
 
+  <GeneratedLinkAlert
+    v-if="generatedLink"
+    :generatedLink="generatedLink"
+  />
+
   <div class="filters">
     <v-layout>
       <v-text-field
@@ -21,7 +26,11 @@
     </v-layout>
   </div>
 
-  <Products v-if="!loading" :products="filteredProducts"/>
+  <Products
+    v-if="!loading"
+    :products="filteredProducts"
+    @generateLink="afterLinkGenerated"
+  />
 
   <div
     class="d-flex justify-center mt-5 mb-6"
@@ -42,6 +51,7 @@ import {ref, onMounted, watch} from 'vue'
 import axios from 'axios'
 import Products from '@/components/Products.vue'
 import AmbassadorRevenueCard from '@/components/AmbassadorRevenueCard.vue'
+import GeneratedLinkAlert from '@/components/GeneratedLinkAlert.vue'
 import {Product} from '@/types/product'
 
 let allProducts: Product[] = []
@@ -53,6 +63,8 @@ const loading = ref<boolean>(false)
 const page = ref<number>(1)
 const search = ref<string>('')
 const sortBy = ref<string>('')
+
+const generatedLink = ref<string>('')
 
 const lastPage = ref<number>(0)
 
@@ -128,6 +140,18 @@ const handleSearch = () => {
   // slice products after setting value of the lastPage
   filteredProducts.value = searchedProducts.slice(0, 12)
 }
+
+const afterLinkGenerated = (link: string) => {
+  /**
+   * After emit, set the link value which will be display at the top of the page.
+   */
+  generatedLink.value = link
+}
+
+const copyLink = () => {
+  navigator.clipboard.writeText(generatedLink.value)
+}
+
 // if the search changes (user entered something to search input)
 // filter products with handleSearch() function.
 watch(search, () => handleSearch())
@@ -154,7 +178,7 @@ watch(sortBy, () => sortProducts())
 <style scoped>
 .filters {
   width: 80%;
-  margin: 8rem auto 0 auto;
+  margin: 2rem auto 0 auto;
 }
 
 .search {
