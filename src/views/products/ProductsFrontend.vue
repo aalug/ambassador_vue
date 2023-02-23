@@ -22,6 +22,19 @@
   </div>
 
   <Products v-if="!loading" :products="filteredProducts"/>
+
+  <div
+    class="d-flex justify-center mt-5 mb-6"
+    v-if="page < lastPage"
+  >
+    <v-btn
+      variant="plain"
+      @click="page++"
+    >
+      Load more
+    </v-btn>
+  </div>
+
 </template>
 
 <script setup lang="ts">
@@ -32,12 +45,16 @@ import AmbassadorRevenueCard from '@/components/AmbassadorRevenueCard.vue'
 import {Product} from '@/types/product'
 
 let allProducts: Product[] = []
+const perPage = 12
 
 const filteredProducts = ref<Product[]>([])
 const loading = ref<boolean>(false)
-const search = ref<string>('')
 
+const page = ref<number>(1)
+const search = ref<string>('')
 const sortBy = ref<string>('')
+
+const lastPage = ref<number>(0)
 
 const sortingOptions = [
   'Price Ascending',
@@ -53,8 +70,9 @@ onMounted(async () => {
       `${import.meta.env.VITE_API_BASE}/ambassador/products/frontend/`,
       {withCredentials: true}
     )
-    filteredProducts.value = data
+    filteredProducts.value = data.slice(0, page.value * perPage)
     allProducts = data
+    lastPage.value = Math.ceil(allProducts.length / perPage)
   } catch (e) {
     console.error(e)
   } finally {
@@ -62,20 +80,9 @@ onMounted(async () => {
   }
 })
 
-// if the search changes (user entered something to search input)
-// filter products to ones that contain the given phrase
-watch(search, () => {
-  filteredProducts.value = allProducts.filter(product => {
-      return product.title.toLowerCase().includes(search.value.toLowerCase()) ||
-        product.description.toLowerCase().includes(search.value.toLowerCase())
-    }
-  )
-})
-
-// if the sortBy changes, sort by chosen option
-watch(sortBy, () => {
+const sortProducts = () => {
   if (sortBy.value === 'Price Ascending' || sortBy.value === 'Price Descending') {
-    filteredProducts.value.sort((a, b) => {
+    filteredProducts.value = allProducts.sort((a, b) => {
       const diff = a.price - b.price
 
       if (diff === 0) return 0
@@ -84,23 +91,63 @@ watch(sortBy, () => {
       const sign = Math.abs(diff) / diff
       // if it is ascending - return base diff value, otherwise return the opposite value
       return sortBy.value === 'Price Ascending' ? sign : -sign
-    })
+    }).slice(0, page.value * perPage)
   } else {
-    filteredProducts.value.sort((a, b) => {
+    filteredProducts.value = allProducts.sort((a, b) => {
       const titleA = a.title.toLowerCase()
       const titleB = b.title.toLowerCase()
 
       if (titleA < titleB) {
-        return sortBy.value === 'Title Ascending' ? -1 : 1;
+        return sortBy.value === 'Title Ascending' ? -1 : 1
       }
       if (titleA > titleB) {
-        return sortBy.value === 'Title Ascending' ? 1 : -1;
+        return sortBy.value === 'Title Ascending' ? 1 : -1
       }
       // titles are the same
-      return 0;
-    })
+      return 0
+    }).slice(0, page.value * perPage)
   }
+}
+
+let searchedProducts: Product[] = []
+const handleSearch = () => {
+  /**
+   * filter products to ones that contain the given phrase
+   */
+  page.value = 1
+
+  searchedProducts = allProducts.filter(product => {
+      return product.title.toLowerCase().includes(search.value.toLowerCase()) ||
+        product.description.toLowerCase().includes(search.value.toLowerCase())
+    }
+  )
+
+  // set the lastPage value before slicing products into pages
+  lastPage.value = Math.ceil(searchedProducts.length / perPage)
+
+  // slice products after setting value of the lastPage
+  filteredProducts.value = searchedProducts.slice(0, 12)
+}
+// if the search changes (user entered something to search input)
+// filter products with handleSearch() function.
+watch(search, () => handleSearch())
+
+watch(page, () => {
+  // load next 12 products
+  // if there is search.value - user products already set by handleSearch()
+  // otherwise, use allProducts
+  const products = search.value ? searchedProducts : allProducts
+  const next1Products = products.slice((page.value - 1) * perPage, page.value * perPage)
+  filteredProducts.value = [
+    ...filteredProducts.value, ...next1Products
+  ]
+
+  // sort products, so the newly added are also sorted the way they should be
+  if (sortBy.value) sortProducts()
 })
+
+// if the sortBy changes, sort by chosen option
+watch(sortBy, () => sortProducts())
 
 </script>
 

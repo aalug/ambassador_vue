@@ -24,15 +24,18 @@
 
   <Products v-if="!loading" :products="products"/>
 
-  <div class="d-flex justify-center mt-5 mb-6">
+  <div
+    class="d-flex justify-center mt-5 mb-6"
+    v-if="page < lastPage"
+  >
     <v-btn
       variant="plain"
       @click="page++"
+      id="loadMore"
     >
       Load more
     </v-btn>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -48,6 +51,8 @@ const loading = ref<boolean>(false)
 const page = ref<number>(1)
 const search = ref<string>('')
 const sortBy = ref<string>('')
+
+const lastPage = ref<number>(0)
 
 type SortingOptions = {
   [key: string]: string
@@ -97,6 +102,7 @@ const loadData = async () => {
     // replace the old products with new ones but add new items from the next page to the
     // old ones.
     products.value = page.value === 1 ? data.data : [...products.value, ...data.data]
+    lastPage.value = data.meta.lastPage
   } catch (e) {
     console.error(e)
   } finally {
@@ -110,12 +116,19 @@ const searchData = async () => {
   await loadData()
 }
 
-watch(sortBy, async () => {
-  await searchData()
+watch(sortBy, async () => {await searchData()})
+watch(page, async () => {
+  await loadData()
+  await scrollToBottom()
 })
-watch(page, async () => await loadData())
 
 onMounted(async () => await loadData())
+
+const scrollToBottom = () => {
+  // scroll down to the `Load more` button
+  const el = document.getElementById('loadMore')
+  el?.scrollIntoView()
+}
 
 </script>
 
