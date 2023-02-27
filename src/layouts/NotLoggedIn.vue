@@ -1,6 +1,8 @@
 <template>
   <v-layout>
-    <AppBar :isUserLoggedIn="false" />
+    <AppBar
+      :isUserLoggedIn="false"
+      :isUserAmbassador="false"/>
 
     <div class="main-container">
       <v-main>
