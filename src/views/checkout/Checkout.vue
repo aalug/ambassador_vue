@@ -23,7 +23,7 @@
               >
                 <v-text-field
                   v-model="userDetails.firstName"
-                  :error-messages="errorMessages.firstName"
+                  :rules="[v => v.length > 0 || 'This field is required.']"
                   label="First name"
                 ></v-text-field>
               </v-col>
@@ -33,7 +33,7 @@
               >
                 <v-text-field
                   v-model="userDetails.lastName"
-                  error-messages="error message"
+                  :rules="[v => v.length > 0 || 'This field is required.']"
                   label="Last name"
                 ></v-text-field>
               </v-col>
@@ -45,6 +45,10 @@
               >
                 <v-text-field
                   v-model="userDetails.email"
+                  :rules="[
+                    v => v.length > 0 || 'This field is required.',
+                    v => validateEmail(v) || 'E-mail is invalid.'
+                    ]"
                   label="E-mail"
                 ></v-text-field>
               </v-col>
@@ -56,6 +60,7 @@
               >
                 <v-text-field
                   v-model="userDetails.address"
+                  :rules="[v => v.length > 0 || 'This field is required.']"
                   label="Address"
                 ></v-text-field>
               </v-col>
@@ -68,6 +73,7 @@
               >
                 <v-text-field
                   v-model="userDetails.country"
+                  :rules="[v => v.length > 0 || 'This field is required.']"
                   label="Country"
                 ></v-text-field>
               </v-col>
@@ -77,7 +83,9 @@
               >
                 <v-text-field
                   v-model="userDetails.city"
+                  :rules="[v => v.length > 0 || 'This field is required.']"
                   label="City"
+                  required
                 ></v-text-field>
               </v-col>
               <v-col
@@ -85,14 +93,17 @@
                 md="2"
               >
                 <v-text-field
-                  v-model="userDetails.zip"
-                  label="Zip"
+                  v-model="userDetails.zipCode"
+                  :rules="[v => (v.length < 9 && v.length > 3) || 'The value must be between 4 and 8 characters.']"
+                  label="Zip Code"
                 ></v-text-field>
               </v-col>
             </v-row>
 
+            <p v-if="errorMessage" class="errorMessage">{{ errorMessage }}</p>
+
             <v-btn
-              class="me-4"
+              class="me-4 mt-5"
               type="submit"
               color="blue"
               block
@@ -126,7 +137,10 @@
               <v-list-item-action>
                 <v-text-field
                   v-model="quantities[product.id]"
-                  :rules="[v => Number.isInteger(Number(v)) || 'The value must be an integer']"
+                  :rules="[
+                    v => Number.isInteger(Number(v)) || 'The value must be an integer',
+                    v => v > 0 || 'The quantity must be at least 1.'
+                    ]"
                   label="Quantity"
                   type="number"
                   min="0"
@@ -145,30 +159,28 @@
               </v-list-item-title>
             </v-list-item>
           </v-list>
-
+          <p v-if="quantityErrorMessage" class="errorMessage">{{ quantityErrorMessage }}</p>
         </v-container>
       </v-col>
     </v-row>
-
   </v-container>
 
 </template>
 
 <script setup lang="ts">
 import {ref, reactive, computed, onMounted} from 'vue'
-import {useRoute} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import axios from 'axios'
 import PageLoadingProgress from '@/components/PageLoadingProgress.vue'
 import {User} from '@/types/user'
 import {Product} from '@/types/product'
 
-type errorMessage = { [key: number]: string }
-
 const loading = ref<boolean>(false)
 const user = ref<User | null>(null)
 const products = ref<Product[]>([])
 const quantities = ref<number[]>([])
-const errorMessages = ref<errorMessage[]>([])
+const errorMessage = ref<string>('')
+const quantityErrorMessage = ref<string>('')
 
 const userDetails = reactive({
   firstName: '',
@@ -177,10 +189,11 @@ const userDetails = reactive({
   address: '',
   country: '',
   city: '',
-  zip: ''
+  zipCode: ''
 })
 
 const {params} = useRoute()
+const router = useRouter()
 
 const total = computed<number>(() => {
   return products.value.reduce((s, p) => {
@@ -188,11 +201,75 @@ const total = computed<number>(() => {
   }, 0)
 })
 
-const submit = () => {
+const validateInputs = () => {
+  /**
+   * Check if all the personal info inputs are valid, and
+   * if the quantity fields are equal to at least 1.
+   */
+  let valid = true
+  for (const v of quantities.value) {
+    if (v < 1) {
+      quantityErrorMessage.value = 'Quantity must be at least 1.'
+      valid = false
+    }
+  }
+  if (valid) quantityErrorMessage.value = ''
 
+  for (const value of Object.values(userDetails)) {
+    if (!value) {
+      errorMessage.value = 'All fields are required.'
+      return valid = false
+    }
+  }
+  errorMessage.value = ''
+  return valid
+}
+
+const submit = async () => {
+  /**
+   * Handle submit of the form.
+   */
+  if (!validateInputs()) return
+
+  loading.value = true
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_BASE}/checkout/orders/`,
+      {
+        firstName: userDetails.firstName,
+        lastName: userDetails.lastName,
+        email: userDetails.email,
+        address: userDetails.address,
+        country: userDetails.country,
+        city: userDetails.city,
+        zipCode: userDetails.zipCode,
+        code: params.code,
+        products: products.value.map(p => ({
+          productId: p.id,
+          quantity: quantities.value[p.id]
+        }))
+      }
+    )
+    await router.push({name: 'checkout-success'})
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
+}
+
+const validateEmail = (email: string) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )
 }
 
 onMounted(async () => {
+  /**
+   * Get the link for the giver parameter in the route.
+   */
   loading.value = true
   try {
     const {data} = await axios.get(
