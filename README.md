@@ -1,54 +1,29 @@
 # Ambassador Vue.js app
-It is a frontend for the ambassador_drf - backend app 
+It is a frontend for the ambassador_drf - https://github.com/aalug/ambassador_drf
 built with the Django REST framework
-### App built with:
-- Vue.js
-- TypeScript
-- Vuetify
+
+
+### App is built with:
+
+- Vue 3
+    + TypeScript
+    + Composition API
 - Pinia
-
-## Project setup
-
-### Env
-Rename `.env.sample` to `.env` and replace the values.
+- Vuetify
 
 
-```
-# yarn
-yarn
+## Getting started
 
-# npm
-npm install
+1. Rename `.env.sample` to `.env` and replace the values
+2. Run in the terminal `yarn` or `npm install`
+3. Then run: `yarn dev` or `npm run dev`
+4. Now, app should be running at http://localhost:3000/
 
-# pnpm
-pnpm install
-```
-
-### Compiles and hot-reloads for development
-
-```
-# yarn
-yarn dev
-
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-```
 
 ### Compiles and minifies for production
 
-```
-# yarn
-yarn build
-
-# npm
-npm run build
-
-# pnpm
-pnpm build
-```
+- `yarn build`
+- `npm run build`
 
 ### Customize configuration
 
