@@ -1,6 +1,6 @@
-# Ambassador Vue.js app
-It is a frontend for the ambassador_drf - https://github.com/aalug/ambassador_drf
-built with the Django REST framework
+# Vue.js Ambassador app
+It is a frontend for the [ambassador_drf app](https://github.com/aalug/ambassador_drf)
+built with the Django REST framework.
 
 
 ### App is built with:
